@@ -38,7 +38,7 @@ Launch the app, work through each lab, capture flags, and submit them on the in-
 
 | Lab List | CTF Scoreboard |
 |---|---|
-| ![Main](screenshots/01-main.png) | ![Scoreboard](screenshots/03-scoreboard.png) |
+|  | [lab](screenshots/03-scoreboard.png) |
 
 ---
 
