@@ -95,6 +95,13 @@
             android:layout_height="52dp" android:text="NET-01 - Cleartext Traffic, No Cert Pinning"
             android:backgroundTint="#111111" android:textColor="#FFFFFF" android:textSize="12sp" android:layout_marginBottom="20dp"/>
 
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="BANKING / OTP LABS" android:textSize="11sp"
+            android:textColor="#FFFFFF" android:letterSpacing="0.1" android:layout_marginBottom="8dp"/>
+        <Button android:id="@+id/btn_otp" android:layout_width="match_parent"
+            android:layout_height="52dp" android:text="OTP-01 - OTP Brute Force, No Rate Limit"
+            android:backgroundTint="#111111" android:textColor="#FFFFFF" android:textSize="12sp" android:layout_marginBottom="20dp"/>
+
         <!-- ADB -->
         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:text="ADB QUICK COMMANDS" android:textSize="11sp"
