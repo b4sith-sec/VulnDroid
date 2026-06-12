@@ -34,6 +34,14 @@ Launch the app, work through each lab, capture flags, and submit them on the in-
 
 ---
 
+## Screenshots
+
+| Lab List | CTF Scoreboard |
+|---|---|
+| ![Main](screenshots/01-main.png) | ![Scoreboard](screenshots/03-scoreboard.png) |
+
+---
+
 ## CTF Flow
 
 1. Open the app - lands directly on the lab list.
