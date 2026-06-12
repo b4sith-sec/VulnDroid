@@ -12,19 +12,18 @@ import com.vulndroid.app.FlagManager;
 import com.vulndroid.app.R;
 
 /**
- * VULN-BR-03: Sensitive data in logcat
+ * VULN-BR-03: Sensitive data in logcat (payment form)
  *
- * As the user types into the username/password fields, every
- * keystroke is logged via Log.d. Any app with READ_LOGS, or
- * `adb logcat`, can capture credentials in plaintext as they
- * are typed.
+ * Card number, expiry, and CVV are logged in plaintext via Log.d
+ * as the user types, and again on "Pay Now". Any app with READ_LOGS,
+ * or `adb logcat`, can capture full card details.
  *
  * Exploit:
- *   adb logcat | grep Gu3ssWeak_INPUT
+ *   adb logcat | grep Gu3ssWeak_PAYMENT
  */
 public class LogcatLeakActivity extends AppCompatActivity {
 
-    private static final String TAG = "Gu3ssWeak_INPUT";
+    private static final String TAG = "Gu3ssWeak_PAYMENT";
     private boolean flagCaptured = false;
 
     @Override
@@ -32,38 +31,44 @@ public class LogcatLeakActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_logcat_leak);
 
-        EditText etUser = findViewById(R.id.et_log_username);
-        EditText etPass = findViewById(R.id.et_log_password);
+        EditText etCard = findViewById(R.id.et_card_number);
+        EditText etExpiry = findViewById(R.id.et_card_expiry);
+        EditText etCvv = findViewById(R.id.et_card_cvv);
+        Button btnPay = findViewById(R.id.btn_pay);
         TextView tvHint = findViewById(R.id.tv_log_hint);
-        Button btnCheck = findViewById(R.id.btn_check_logcat);
 
-        TextWatcher userWatcher = new TextWatcher() {
+        TextWatcher leakWatcher = new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int a, int b, int c) {}
             @Override public void onTextChanged(CharSequence s, int a, int b, int c) {
-                Log.d(TAG, "username field changed: " + s.toString());
+                // VULN: card data logged in plaintext on every keystroke
+                Log.d(TAG, "Card number field: " + etCard.getText().toString());
+                Log.d(TAG, "Expiry field: " + etExpiry.getText().toString());
+                Log.d(TAG, "CVV field: " + etCvv.getText().toString());
                 maybeCapture();
             }
             @Override public void afterTextChanged(Editable s) {}
         };
 
-        TextWatcher passWatcher = new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int a, int b, int c) {}
-            @Override public void onTextChanged(CharSequence s, int a, int b, int c) {
-                // VULN: password value logged in plaintext on every keystroke
-                Log.d(TAG, "password field changed: " + s.toString());
-                maybeCapture();
-            }
-            @Override public void afterTextChanged(Editable s) {}
-        };
+        etCard.addTextChangedListener(leakWatcher);
+        etExpiry.addTextChangedListener(leakWatcher);
+        etCvv.addTextChangedListener(leakWatcher);
 
-        etUser.addTextChangedListener(userWatcher);
-        etPass.addTextChangedListener(passWatcher);
+        btnPay.setOnClickListener(v -> {
+            // VULN: full payment payload logged on submit
+            Log.d(TAG, "=== PAYMENT SUBMITTED ===");
+            Log.d(TAG, "Card: " + etCard.getText().toString());
+            Log.d(TAG, "Expiry: " + etExpiry.getText().toString());
+            Log.d(TAG, "CVV: " + etCvv.getText().toString());
+            Log.d(TAG, "=========================");
 
-        btnCheck.setOnClickListener(v -> {
+            maybeCapture();
+
             tvHint.setText(
-                "Run this in your terminal:\n\n" +
+                "Payment submitted!\n\n" +
+                "Now run this in your terminal:\n\n" +
                 "adb logcat | grep " + TAG + "\n\n" +
-                "Every keystroke you typed above\nis visible in plaintext."
+                "Your full card number, expiry, and CVV\n" +
+                "are visible in plaintext logcat output."
             );
             tvHint.setVisibility(android.view.View.VISIBLE);
         });
